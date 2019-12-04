@@ -7,14 +7,18 @@ from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.logger import Logger
 from utils.utils import get_args
+from sys import exit
 
+tf.compat.v1.disable_eager_execution()
 
 def main():
     # capture the config path from the run arguments
     # then process the json configuration file
     try:
         args = get_args()
-        config = process_config(args.config)
+        json_file = '../configs/example.json'
+        # config = process_config(args.config)
+        config = process_config(json_file)
 
     except:
         print("missing or invalid arguments")
@@ -23,7 +27,7 @@ def main():
     # create the experiments dirs
     create_dirs([config.summary_dir, config.checkpoint_dir])
     # create tensorflow session
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     # create your data generator
     data = DataGenerator(config)
     
