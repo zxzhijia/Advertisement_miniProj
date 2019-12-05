@@ -12,17 +12,17 @@ class ExampleModel(BaseModel):
         self.is_training = tf.compat.v1.placeholder(tf.bool)
 
         self.x = tf.compat.v1.placeholder(tf.float32, shape=[None] + self.config.state_size)
-        self.y = tf.compat.v1.placeholder(tf.float32, shape=[None, 10])
+        self.y = tf.compat.v1.placeholder(tf.float32, shape=[None, 3706])
 
         # network architecture
         d1 = tf.compat.v1.layers.dense(self.x, 512, activation=tf.nn.relu, name="dense1")
-        d2 = tf.compat.v1.layers.dense(d1, 10, name="dense2")
+        d2 = tf.compat.v1.layers.dense(d1, 3706, name="dense2")
 
         with tf.name_scope("loss"):
-            self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y, logits=d2))
+            self.meansq = tf.reduce_mean(tf.square(self.y - d2))
             update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_ops):
-                self.train_step = tf.compat.v1.train.AdamOptimizer(self.config.learning_rate).minimize(self.cross_entropy,
+                self.train_step = tf.compat.v1.train.AdamOptimizer(self.config.learning_rate).minimize(self.meansq,
                                                                                          global_step=self.global_step_tensor)
 
             correct_prediction = tf.equal(tf.argmax(d2, 1), tf.argmax(self.y, 1))
