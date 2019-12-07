@@ -16,16 +16,16 @@ class ExampleModel(BaseModel):
 
         # network architecture
         d1 = tf.compat.v1.layers.dense(self.x, 512, activation=tf.nn.relu, name="dense1")
-        d2 = tf.compat.v1.layers.dense(d1, 3706, name="dense2")
+        self.d2 = tf.compat.v1.layers.dense(d1, 3706, name="dense2")
 
         with tf.name_scope("loss"):
-            self.meansq = tf.reduce_mean(tf.square(self.y - d2))
+            self.meansq = tf.reduce_mean(tf.square(self.y - self.d2))
             update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_ops):
                 self.train_step = tf.compat.v1.train.AdamOptimizer(self.config.learning_rate).minimize(self.meansq,
                                                                                          global_step=self.global_step_tensor)
 
-            correct_prediction = tf.equal(tf.argmax(d2, 1), tf.argmax(self.y, 1))
+            correct_prediction = tf.equal(tf.argmax(self.d2, 1), tf.argmax(self.y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 

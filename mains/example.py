@@ -3,6 +3,7 @@ import tensorflow as tf
 from data_loader.data_generator import DataGenerator
 from models.example_model import ExampleModel
 from trainers.example_trainer import ExampleTrainer
+from evaluator.evaluator import Evaluator
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.logger import Logger
@@ -41,6 +42,11 @@ def main():
     model.load(sess)
     # here you train your model
     trainer.train()
+    # here you evaluate your model
+    evaluator = Evaluator(trainer.sess, trainer.model, data, config, logger)
+    evaluator.evaluate()
+    evaluator.analysis_results()
+
 
 
 if __name__ == '__main__':
