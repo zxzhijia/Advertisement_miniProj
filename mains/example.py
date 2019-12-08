@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from data_loader.data_generator import DataGenerator
+from data_loader.data_generator_v2 import DataGenerator
 from models.example_model import ExampleModel
 from trainers.example_trainer import ExampleTrainer
 from evaluator.evaluator import Evaluator
@@ -31,6 +31,7 @@ def main():
     sess = tf.compat.v1.Session()
     # create your data generator
     data = DataGenerator(config)
+    data.generate_data()
     
     # create an instance of the model you want
     model = ExampleModel(config)
