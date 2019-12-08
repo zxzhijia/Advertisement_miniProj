@@ -17,11 +17,13 @@ class ExampleTrainer(BaseTrain):
             accs.append(acc)
         loss = np.mean(losses)
         acc = np.mean(accs)
+        val_loss, val_acc = self.val_step()
 
         cur_it = self.model.global_step_tensor.eval(self.sess)
         summaries_dict = {
             'loss': loss,
             'acc': acc,
+            'val_loss': np.mean(val_loss)
         }
         self.logger.summarize(cur_it, summaries_dict=summaries_dict)
         self.model.save(self.sess)
@@ -34,3 +36,9 @@ class ExampleTrainer(BaseTrain):
                                      feed_dict=feed_dict)
         return loss, acc
 
+    def val_step(self):
+        batch_x, batch_y = self.data.users_items_matrix_train_average, self.data.users_items_matrix_validate
+        feed_dict = {self.model.x: batch_x, self.model.y: batch_y, self.model.is_training: True}
+        loss, acc = self.sess.run([self.model.meansq, self.model.accuracy],
+                                     feed_dict=feed_dict)
+        return loss, acc

@@ -23,7 +23,7 @@ class DataGenerator:
 
     def next_batch(self, batch_size):
         idx = np.random.choice(500, batch_size)
-        yield self.users_items_matrix_train_zero[idx, :], self.users_items_matrix_train_zero[idx, :]
+        yield self.users_items_matrix_train_average[idx, :], self.users_items_matrix_train_zero[idx, :]
 
     def dataPreprocessor(self, rating_df, num_users, num_items, init_value=0, average=False):
         """
@@ -52,6 +52,7 @@ class DataGenerator:
 
     def generate_data(self):
         self.users_items_matrix_train_zero = self.dataPreprocessor(self.train_df, self.num_users, self.num_movies, 0)
-        users_items_matrix_validate = self.dataPreprocessor(self.validate_df, self.num_users, self.num_movies, 0)
-        users_items_matrix_test = self.dataPreprocessor(self.test_df, self.num_users, self.num_movies, 0)
-        return users_items_matrix_validate, users_items_matrix_test
+        self.users_items_matrix_validate = self.dataPreprocessor(self.validate_df, self.num_users, self.num_movies, 0)
+        self.users_items_matrix_test = self.dataPreprocessor(self.test_df, self.num_users, self.num_movies, 0)
+        self.users_items_matrix_train_average = self.dataPreprocessor(self.train_df, self.num_users, self.num_movies, average=True)
+        return self.users_items_matrix_train_average, self.users_items_matrix_validate, self.users_items_matrix_test

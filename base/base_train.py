@@ -31,3 +31,11 @@ class BaseTrain:
         - return any metrics you need to summarize
         """
         raise NotImplementedError
+
+    def val_step(self):
+        """
+        implement the logic of the validation step
+        - run the tensorflow session
+        - return any metric you need to summarize
+        """
+        raise NotImplementedError
