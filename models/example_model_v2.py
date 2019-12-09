@@ -16,26 +16,27 @@ class ExampleModel(BaseModel):
         self.y = tf.compat.v1.placeholder(tf.float32, shape=[None, 3952])
 
         # network architecture
-        d1 = tf.compat.v1.layers.dense(self.x, 512, activation=tf.nn.relu, name="dense1")
+        d1 = tf.compat.v1.layers.dense(self.x, 1024, activation=tf.nn.relu, name="dense1")
+        d2 = tf.compat.v1.layers.dense(d1, 512, activation=tf.nn.relu, name="dense2")
+        d3 = tf.compat.v1.layers.dense(d2, 1024, activation=tf.nn.relu, name="dense3")
+        self.d4 = tf.compat.v1.layers.dense(d3, 3952, name="dense4")
 
-        self.d2 = tf.compat.v1.layers.dense(d1, 3952, name="dense2")
-
-        l2_loss = tf.nn.l2_loss(tf.compat.v1.trainable_variables()[0]) + tf.nn.l2_loss(tf.compat.v1.trainable_variables()[1]) +\
-                  tf.nn.l2_loss(tf.compat.v1.trainable_variables()[2]) +\
-                  tf.nn.l2_loss(tf.compat.v1.trainable_variables()[3])
+        l2_loss = tf.add_n([tf.nn.l2_loss(tf.compat.v1.trainable_variables()[i]) for i in range(8)])
 
         with tf.name_scope("loss"):
             # self.meansq = tf.reduce_mean(tf.square(self.y - self.d2))
-            self.meansq = self.masked_mse(self.y, self.d2)
+            self.meansq = self.masked_mse(self.y, self.d4)
             self.meansq += 0.0005*l2_loss
-            self.rmse_clip = self.masked_rmse_clip(self.y, self.d2)
+            self.rmse_clip = self.masked_rmse_clip(self.y, self.d4)
             update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_ops):
                 self.train_step = tf.compat.v1.train.AdamOptimizer(self.config.learning_rate).minimize(self.meansq,
                                                                                          global_step=self.global_step_tensor)
 
+            """
             correct_prediction = tf.equal(tf.argmax(self.d2, 1), tf.argmax(self.y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+            """
 
     """
     def masked_se(y_true, y_pred):

@@ -1,9 +1,9 @@
 {
   "exp_name": "example",
-  "num_epochs": 150,
+  "num_epochs": 500,
   "num_iter_per_epoch": 48,
-  "learning_rate": 0.0005,
+  "learning_rate": 0.0001,
   "batch_size": 100,
-  "state_size": [3953],
+  "state_size": [3952],
   "max_to_keep":5
 }

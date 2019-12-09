@@ -17,12 +17,12 @@ class DataGenerator:
                                                  test_size=0.1,
                                                  random_state=999613182)
 
-        self.num_users = ratings[0].unique().max() + 1
-        self.num_movies = ratings[1].unique().max() + 1
+        self.num_users = ratings[0].unique().max()
+        self.num_movies = ratings[1].unique().max()
         print("loaded training data")
 
     def next_batch(self, batch_size):
-        idx = np.random.choice(500, batch_size)
+        idx = np.random.choice(6040, batch_size)
         yield self.users_items_matrix_train_average[idx, :], self.users_items_matrix_train_zero[idx, :]
 
     def dataPreprocessor(self, rating_df, num_users, num_items, init_value=0, average=False):
@@ -38,7 +38,7 @@ class DataGenerator:
         if average:
             matrix = np.full((num_users, num_items), 0.0)
             for (_, userID, itemID, rating, timestamp) in rating_df.itertuples():
-                matrix[userID, itemID] = rating
+                matrix[userID-1, itemID-1] = rating
             avergae = np.true_divide(matrix.sum(1), np.maximum((matrix != 0).sum(1), 1))
             inds = np.where(matrix == 0)
             matrix[inds] = np.take(avergae, inds[0])
@@ -46,7 +46,7 @@ class DataGenerator:
         else:
             matrix = np.full((num_users, num_items), init_value)
             for (_, userID, itemID, rating, timestamp) in rating_df.itertuples():
-                matrix[userID, itemID] = rating
+                matrix[userID-1, itemID-1] = rating
 
         return matrix
 

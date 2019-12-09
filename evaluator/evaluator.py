@@ -10,12 +10,13 @@ class Evaluator(BaseEvaluator):
     def evaluate(self):
         self.sample_test = self.data.users_items_matrix_test
         self.sample_user = self.data.users_items_matrix_train_average
-        self.sample_user_predict = self.sess.run(self.model.d2, feed_dict={self.model.x: self.sample_user})
-        self.test_loss = self.masked_rmse_clip(self.data.users_items_matrix_test, self.sample_user_predict)
+        self.sample_user_predict, self.rmse_clip = self.sess.run([self.model.d4, self.model.rmse_clip], feed_dict={self.model.x: self.sample_user,
+                                                                                                                   self.model.y: self.sample_test,
+                                                                                                                   self.model.is_training: False})
 
         print("The predicted rating is {}".format(self.sample_user_predict))
         print("The default rating is {}".format(self.sample_user))
-
+        print("The clip rmse is {}".format(self.rmse_clip))
 
     def analysis_results(self):
         for example_id in range(1, 10):
@@ -25,11 +26,3 @@ class Evaluator(BaseEvaluator):
             plt.show()
             # plt.savefig('../figures/prediction_truth.png')
 
-    def masked_rmse_clip(self, y_true, y_pred):
-        # masked function
-        mask_true = tf.cast(tf.math.not_equal(y_true, 0), tf.float32)
-        y_pred = tf.clip_by_value(y_pred, clip_value_min=1, clip_value_max=5)
-        # masked squared error
-        masked_squared_error = tf.square(mask_true * (y_true - y_pred))
-        masked_mse = tf.sqrt(tf.math.reduce_sum(masked_squared_error, axis=-1) / tf.maximum(tf.math.reduce_sum(mask_true, axis=-1), 1))
-        return masked_mse
