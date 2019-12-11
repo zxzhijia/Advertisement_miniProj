@@ -33,21 +33,6 @@ class ExampleModel(BaseModel):
                 self.train_step = tf.compat.v1.train.AdamOptimizer(self.config.learning_rate).minimize(self.meansq,
                                                                                          global_step=self.global_step_tensor)
 
-            """
-            correct_prediction = tf.equal(tf.argmax(self.d2, 1), tf.argmax(self.y, 1))
-            self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-            """
-
-    """
-    def masked_se(y_true, y_pred):
-        # masked function
-        mask_true = K.cast(K.not_equal(y_true, 0), K.floatx())
-        # masked squared error
-        masked_squared_error = K.square(mask_true * (y_true - y_pred))
-        masked_mse = K.sum(masked_squared_error, axis=-1)
-        return masked_mse
-    """
-
     def masked_mse(self, y_true, y_pred):
         # masked function
         mask_true = tf.cast(tf.math.not_equal(y_true, 0), tf.float32)

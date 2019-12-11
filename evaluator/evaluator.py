@@ -21,8 +21,8 @@ class Evaluator(BaseEvaluator):
     def analysis_results(self):
         for example_id in range(1, 10):
             plt.figure()
-            plt.plot(self.sample_test[example_id, np.where(self.data.users_items_matrix_test[example_id, :]>0)[0]], '.g')
-            plt.plot(self.sample_user_predict[example_id, np.where(self.data.users_items_matrix_test[example_id, :]>0)[0]], '.r')
+            plt.plot(self.sample_test[example_id, np.where(self.sample_test[example_id, :]>0)[0]], '.g')
+            plt.plot(self.sample_user_predict[example_id, np.where(self.sample_test[example_id, :]>0)[0]], '.r')
             plt.show()
             # plt.savefig('../figures/prediction_truth.png')
 
